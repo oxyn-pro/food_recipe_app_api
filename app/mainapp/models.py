@@ -6,7 +6,7 @@ from django.contrib.auth.models import PermissionsMixin
 class CustomUserManager(BaseUserManager):
     """Helps to create user(s), to create super user(s) and etc."""
     def create_user(self, email, password=None, **extra_fields):
-
+        """Creates a new user"""
         if not email:
             raise ValueError("User must have an email address")
 
@@ -20,8 +20,6 @@ class CustomUserManager(BaseUserManager):
         """Creates and saves a new superuser"""
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
-        user.save(using=self._db)
-
         user.is_superuser = True
         user.is_staff = True
         user.save(using=self._db)
@@ -29,7 +27,7 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
-class CustomUserModel(AbstractBaseUser, PermissionsMixin):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     """Customer User Model that supports "email" to be instead of username"""
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
