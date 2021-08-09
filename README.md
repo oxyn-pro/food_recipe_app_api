@@ -8,3 +8,8 @@ This is the architecture of the Django User Create Function, starting from web H
 ## About Serializers in Django Rest Framework:
 
 https://micropyramid.com/blog/django-rest-framework-send-extra-context-data-to-serializers/
+
+
+## How to Implement Token Authentication using Django REST Framework
+
+https://simpleisbetterthancomplex.com/tutorial/2018/11/22/how-to-implement-token-authentication-using-django-rest-framework.html
