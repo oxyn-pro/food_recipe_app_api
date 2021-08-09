@@ -1,6 +1,8 @@
 from django.test import TestCase, Client
+# Client in order to be a test client to receive a request
 from django.contrib.auth import get_user_model
-from django.urls import reverse
+# get_user_model in order to get a current active User model
+from django.urls import reverse  # in order to generate a url/path
 
 
 class TestAdminSite(TestCase):
