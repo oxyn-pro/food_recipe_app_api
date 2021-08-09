@@ -1,9 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-# BaseUserManager class - in order to create our own custom user manager
-# AbstractBaseUser class - in order to create our own custom user model
 from django.contrib.auth.models import PermissionsMixin
-# PermissionsMixin - to manage and create custom permissions for a user
 
 
 class CustomUserManager(BaseUserManager):
