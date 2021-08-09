@@ -33,7 +33,7 @@ class TestAdminSite(TestCase):
 
     def test_user_change_page(self):
         """Test whether user edit page works or not"""
-        # admin/customuser/id/change
+        # admin/mainapp/customuser/id/change
         url = reverse('admin:mainapp_customuser_change', args=[self.user.id])
         response = self.client.get(url)
 

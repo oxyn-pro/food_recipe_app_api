@@ -7,7 +7,7 @@ from django.contrib.auth.models import PermissionsMixin
 
 
 class CustomUserManager(BaseUserManager):
-    """Helps to create user(s), to create super user(s) and etc."""
+    """Helps to create user(s), and to create super user(s) and etc."""
     def create_user(self, email, password=None, **extra_fields):
         """Creates a new user"""
         if not email:
