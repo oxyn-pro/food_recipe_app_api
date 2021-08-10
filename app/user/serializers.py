@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
     """The Serializer for users object"""
 
     class Meta:
-        model = get_user_model()
+        model = get_user_model()  # gets a active User model(ie. 'CusromUser')
         fields = ('email', 'password', 'name')  # these are only fields that
         # we will accept, when the user is created.
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
@@ -43,6 +43,19 @@ class UserSerializer(serializers.ModelSerializer):
     # serializer (like: email, password, name (in "fields")) as a JSON format,
     # and that validated data we use in 'create' function, in order to pass it
     # to our 'create_user' function in our 'models'
+
+    def update(self, instance, validated_data):
+        """Update a user, setting password in correct form and return user"""
+        # instance is linked into ModelSerializer class, meaning that it has
+        # a reference to 'CustomUser'(user own) model, and it(class) can link
+        # its(User mod)instances(objects of out model(in our case User model))
+        password = validated_data.pop('password', None)
+        user = super().update(instance, validated_data)
+
+        if password:
+            user.set_password(password)
+            user.save()
+        return user
 
 # Front(JSON data) -> API -> HTTP POST -> Serializer -> create_user(models.py)
 

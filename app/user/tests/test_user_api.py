@@ -13,6 +13,9 @@ CREATE_USER_URL = reverse("user:create")
 TOKEN_URL = reverse("user:token")
 # This is the url tha we will make a HTTP POST request to generate a token
 
+ME_URL = reverse("user:me")
+# this will store the url that will allow a user to modefy his/her account
+
 
 def create_user(**params):  # this function is to make other function shorter
     return get_user_model().objects.create_user(**params)
@@ -139,3 +142,64 @@ class PublicUserApiTests(TestCase):
         response = self.client.post(TOKEN_URL, payload)
         self.assertNotIn("token", response.data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # -------MAKE SURE THAT USER IS AUTHORIZED TO ACCESS 'me' ENDPOINT------ #
+    def test_auth_required_to_modefy(self):
+        """Test that an authentication is required for a user
+           in order to modefy his/her own user's data"""
+        response = self.client.get(ME_URL)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateUserApiTests(TestCase):
+    """Authentication is required in order to use these related endpoints"""
+# -----FORSE AUTHORIZE 'user' AND TEST IF THE RESPONSE HAS RELEVANT DATA---- #
+    def setUp(self):
+        self.user = create_user(
+            email='testt@gmail.com',
+            password='test1234',
+            name="test"
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)  # oneuser for alltests
+        # By these, every time when each of our
+        # tests run we will make sure that a user is authenticated
+
+    def test_retrieving_logged_in_user(self):
+        """Test logged in user is retrieved successfully"""
+
+        response = self.client.get(ME_URL)
+
+        # after successfully logging in, then check status_code and whether
+        # data from response of HTTP GET is equal to the actual user's data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {
+            'name': self.user.name,  # test
+            'email': self.user.email,  # testt@gmail.co
+        })
+
+    def test_post_not_allowed_me_url(self):
+        """Test that HTTP POST method is not allowed on 'me' url,
+           we what updata data using API"""
+
+        response = self.client.post(ME_URL, {})
+
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    # authenticated user can update his/her profile, not ordinary users
+    def test_update_user_profile(self):
+        """Test update user profile for authenticated user"""
+
+        payload = {
+            "name": "new test",
+            "password": "newtest1234"
+        }
+        # patch will change the matching user data in our case (name, passw)
+        response = self.client.patch(ME_URL, payload)
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.name, payload['name'])
+        self.assertTrue(self.user.check_password(payload['password']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
