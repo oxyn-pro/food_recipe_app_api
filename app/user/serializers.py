@@ -10,6 +10,8 @@ from django.utils.translation import ugettext_lazy as _
 
 
 from rest_framework import serializers
+# Usually by using serializers we send transformed JSON data or from it
+
 # Serialazer helps to serialize the db and model objects to Python objects,
 # and  to form them into JS, JSON objects. In a simple language it is
 # responsible for converting objects into data types understandable by
@@ -22,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
     """The Serializer for users object"""
 
     class Meta:
-        model = get_user_model()  # gets a active User model(ie. 'CusromUser')
+        model = get_user_model()  # gets an active User model(ie 'CustomUser')
         fields = ('email', 'password', 'name')  # these are only fields that
         # we will accept, when the user is created.
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
@@ -44,11 +46,12 @@ class UserSerializer(serializers.ModelSerializer):
     # and that validated data we use in 'create' function, in order to pass it
     # to our 'create_user' function in our 'models'
 
+    # can update only if authenticated / loggen in
     def update(self, instance, validated_data):
         """Update a user, setting password in correct form and return user"""
         # instance is linked into ModelSerializer class, meaning that it has
         # a reference to 'CustomUser'(user own) model, and it(class) can link
-        # its(User mod)instances(objects of out model(in our case User model))
+        # its(User mod)instances(objects of our model(in our case users))
         password = validated_data.pop('password', None)
         user = super().update(instance, validated_data)
 
@@ -57,13 +60,16 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
         return user
 
-# Front(JSON data) -> API -> HTTP POST -> Serializer -> create_user(models.py)
+# Front(JSON data) -> API -> HTTP POST ->Serializer(will show what's expected)
+# -> View -> create_user(models.py)
 
 
 # Here we created a new serializer based on standard Django Serializer module
 class AuthTokenSerializer(serializers.Serializer):
     """Serializer for the user authentication object
           (Token creation and its application)"""
+
+    # expect these fields when making post, put, patch requests
     email = serializers.CharField()
     password = serializers.CharField(
         style={'input_type': 'password'},

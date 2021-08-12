@@ -3,6 +3,8 @@ from rest_framework import generics  # it will help us to pass the data
 from rest_framework import authentication, permissions
 
 from rest_framework.authtoken.views import ObtainAuthToken
+# with 'Obtain Auth Token" users can request token with their
+# username/email and password
 from rest_framework.settings import api_settings
 
 from user.serializers import UserSerializer, AuthTokenSerializer
@@ -11,7 +13,9 @@ from user.serializers import UserSerializer, AuthTokenSerializer
 # it will make an API to create objects in database
 class CreateUserView(generics.CreateAPIView):
     """Create a new user in the system (it will create objects in db)"""
-    serializer_class = UserSerializer
+    serializer_class = UserSerializer  # here serializer is used to tell
+    # to APIView what data to expect from post(create), put(update),
+    # patch(partially update)
 
 
 class CreateTokenView(ObtainAuthToken):
