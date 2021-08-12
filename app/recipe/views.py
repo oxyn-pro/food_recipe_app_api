@@ -9,7 +9,9 @@ from . import serializers
 from .serializers import Tag
 
 
-class TagViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+class TagViewSet(viewsets.GenericViewSet,
+                 mixins.ListModelMixin,
+                 mixins.CreateModelMixin):
     """Manage tags in the database, mainly listing"""
     authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticated, )
@@ -24,3 +26,12 @@ class TagViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
         # request will have 'user' attached to it because
         # authentication_classes take care of authentication of user and
         # assignning it(user) to request.
+
+    def perform_create(self, serializer):
+        """Create a new tag"""
+        serializer.save(user=self.request.user)
+    # it will hook into 'create' process. When we do "create" function
+    # in our ViewSet/CreateModelMixin 'perform_create' will be invoked,
+    # and validated serializer(will be Dictionary data from Front,
+    # like name= tagname) will do our modifications(such as saving
+    # authenticated user into 'user')
