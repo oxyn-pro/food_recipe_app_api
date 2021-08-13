@@ -81,3 +81,25 @@ class Ingredient(models.Model):
     def __str__(self):
         """Returns string representation"""
         return self.name
+
+
+class Recipe(models.Model):
+    """Recipe object/table"""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    title = models.CharField(max_length=255, null=False)
+    time_minutes = models.IntegerField()
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    link = models.CharField(max_length=255, blank=True)
+    # blank is recommended than null, because in null blank should also
+    # be checked, which makes code makes process a bit complicated
+
+    ingredients = models.ManyToManyField('Ingredient')
+    # if you put Ingredient without quotes, then you need to have correct
+    # order of classes, meaning that Ingredient must come before Recipe.
+    tags = models.ManyToManyField('Tag')
+
+    def __str__(self):
+        return self.title
