@@ -69,3 +69,25 @@ class PrivateIngredientApiTests(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['name'],
                          ingredient_orig_user.name)
+
+    def test_create_ingredient_successful(self):
+        """Test creating a new ingredient"""
+        payload = {'name': "Test ingredient"}
+
+        # in order to create user must be already authenticated
+        self.client.post(INGREDIENTS_URL, payload)
+
+        exists = Ingredient.objects.filter(
+            user=self.user,
+            name=payload['name'],
+        ).exists()
+
+        self.assertTrue(exists)
+
+    def test_create_ingredient_with_invalid_credentials(self):
+        """Test creating ingredient with invalid credentials"""
+        payload = {"name": ""}
+
+        response = self.client.post(INGREDIENTS_URL, payload)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

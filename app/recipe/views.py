@@ -43,7 +43,8 @@ class TagViewSet(viewsets.GenericViewSet,
 
 
 class IngredientViewSet(viewsets.GenericViewSet,
-                        mixins.ListModelMixin):
+                        mixins.ListModelMixin,
+                        mixins.CreateModelMixin):
     """Manage ingredients in the database, by listing, and controlling
        create operations"""
     authentication_classes = (TokenAuthentication, )
@@ -56,3 +57,12 @@ class IngredientViewSet(viewsets.GenericViewSet,
         # here queryset is filtered, meaning that necessary ingredients will be
         # filtered / retrieved from ingredients by user's name.
         # ie. 'Kale = user1' is assigned to user1, 'Salt=user2' and etc.
+
+    def perform_create(self, serializer):
+        """Create a new ingredient"""
+        serializer.save(user=self.request.user)
+    # it will hook into 'create' process. When we do "create" function
+    # in our ViewSet/CreateModelMixin 'perform_create' will be invoked,
+    # and validated serializer(will be Dictionary data from Front,
+    # like name=ingredientname) will do our modifications(such as saving
+    # authenticated user into 'user')
