@@ -1,6 +1,13 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
+from mainapp import models
+
+
+def sample_user(email="test@gmail.com", password="Test1234"):
+    """Creating a sample user to use them in tests"""
+    return get_user_model().objects.create_user(email, password)
+
 
 class ModelTests(TestCase):
     def test_create_user_with_email(self):
@@ -39,3 +46,24 @@ class ModelTests(TestCase):
 
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
+
+    # --------------------------Testing Tag Model-------------------------- #
+    def test_tag_str(self):
+        """Test whether tag comes in string representation"""
+        tag = models.Tag.objects.create(
+            user=sample_user(),
+            name="Vegan"
+        )
+        # in Django models you can specify what field you want to use when you
+        # convert a model to string representation (we chose name)
+        self.assertEqual(str(tag), tag.name)
+
+    # -----------------------Testing Ingredient Model----------------------- #
+    def test_ingredient_str(self):
+        """Test whether ingredient comes in string representation"""
+        ingredient = models.Ingredient.objects.create(
+            user=sample_user(),
+            name="Tomato"
+        )
+
+        self.assertEqual(str(ingredient), ingredient.name)
