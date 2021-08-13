@@ -20,3 +20,8 @@ https://micropyramid.com/blog/django-rest-framework-send-extra-context-data-to-s
 ## How to Implement Token Authentication using Django REST Framework
 
 https://simpleisbetterthancomplex.com/tutorial/2018/11/22/how-to-implement-token-authentication-using-django-rest-framework.html
+
+
+## Some advises on how to manage branches in Git
+
+https://geekflare.com/delete-github-branch/
