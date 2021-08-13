@@ -9,6 +9,9 @@ router.register('tags', views.TagViewSet)  # .../tags/...
 #              user/tags/1
 #              user/tags/1(change)
 # those all changes(create, list, retrieve)'s urls are dynamically added
+
+router.register('ingredients', views.IngredientViewSet)
+
 app_name = 'recipe'
 
 urlpatterns = [

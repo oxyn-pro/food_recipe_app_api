@@ -38,7 +38,7 @@ class PrivateTagsApiTests(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(self.user)
 
-    def test_retrieve_tags(self):
+    def test_retrieve_tag_list(self):
         """Test if an authenticated user can see/retrieve tags
            that he/she created"""
 

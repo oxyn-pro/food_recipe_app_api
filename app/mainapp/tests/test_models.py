@@ -54,5 +54,16 @@ class ModelTests(TestCase):
             user=sample_user(),
             name="Vegan"
         )
-
+        # in Django models you can specify what field you want to use when you
+        # convert a model to string representation (we chose name)
         self.assertEqual(str(tag), tag.name)
+
+    # -----------------------Testing Ingredient Model----------------------- #
+    def test_ingredient_str(self):
+        """Test whether ingredient comes in string representation"""
+        ingredient = models.Ingredient.objects.create(
+            user=sample_user(),
+            name="Tomato"
+        )
+
+        self.assertEqual(str(ingredient), ingredient.name)
