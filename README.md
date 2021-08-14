@@ -25,3 +25,7 @@ https://simpleisbetterthancomplex.com/tutorial/2018/11/22/how-to-implement-token
 ## Some advises on how to manage branches in Git
 
 https://geekflare.com/delete-github-branch/
+
+## Serializer Relations
+
+https://www.django-rest-framework.org/api-guide/relations/#primarykeyrelatedfield

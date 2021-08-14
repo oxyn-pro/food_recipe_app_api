@@ -5,12 +5,18 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from mainapp.models import Recipe
+from mainapp.models import Recipe, Tag, Ingredient
 
-from recipe.serializers import RecipeSerializer
+from recipe.serializers import RecipeSerializer, RecipeDetailSerializer
 
 
 RECIPES_URL = reverse('recipe:recipe-list')
+
+
+def detail_url(recipe_id):
+    """Return recipe detail URL"""
+    return reverse("recipe:recipe-detail", args=[recipe_id])
+    # it will look like this: .../recipe/recipes/1
 
 
 def create_user(**params):
@@ -31,6 +37,16 @@ def create_sample_recipe(user, **params):
     # create/accept other params and save dictionary.
 
     return Recipe.objects.create(user=user, **defaults)
+
+
+def create_sample_tag(user, name="Lunch"):
+    """Create and retrieve a sample tag"""
+    return Tag.objects.create(user=user, name=name)
+
+
+def create_sample_ingredient(user, name="Sugar"):
+    """Create and retrieve a sample ingredient"""
+    return Ingredient.objects.create(user=user, name=name)
 
 
 class PublicRecipesApiTests(TestCase):
@@ -70,6 +86,16 @@ class PrivateRecipesApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
 
+        # here the var serializer refers to RecipeSerializer, meaning that
+        # it will show the data that is stored in table in database.
+        # ie. >>> print(repr(serializer))
+        # RecipeSerializer():
+        #   id = IntegerField(label='ID', read_only=True)
+        #   title = CharField(max_length=255)
+        #   ingredients = PrimaryKeyRelatedField(
+        #                 queryset=Ingredient.objects.all())
+        #   ...
+
     def test_assigned_recipes_limited_user(self):
         """Test if the authenticated(logged in) user gets only
            assigned recipes to his/her user. Or with other words,
@@ -87,4 +113,22 @@ class PrivateRecipesApiTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data, serializer.data)
+
+    def test_view_recipe_detail(self):
+        """Test viewing recipe detail (accessing that endpoint)"""
+        recipe = create_sample_recipe(user=self.user)
+
+        # After defining the Many to many relationship of models
+        # (Tag, Ingredient, Recipe) in serializer and models, we can now
+        # add tags, ingredients like this:
+        recipe.tags.add(create_sample_tag(user=self.user))
+        recipe.ingredients.add(create_sample_ingredient(user=self.user))
+        # here, we are adding tag and ingredient to current created recipe
+
+        url = detail_url(recipe.id)
+        response = self.client.get(url)
+
+        serializer = RecipeDetailSerializer(recipe)
+
         self.assertEqual(response.data, serializer.data)

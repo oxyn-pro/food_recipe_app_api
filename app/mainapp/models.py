@@ -60,7 +60,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):  # to put CustomUser
 class Tag(models.Model):
     """Tag in order to use in 'recipe'"""
     name = models.CharField(max_length=255)
-    user = models.ForeignKey(
+    # one tag can have only one user,
+    user = models.ForeignKey(  # one user can have many tags, OneToMany relat.
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
@@ -89,7 +90,7 @@ class Recipe(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
-    title = models.CharField(max_length=255, null=False)
+    title = models.CharField(max_length=255)
     time_minutes = models.IntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2)
     link = models.CharField(max_length=255, blank=True)

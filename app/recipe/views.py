@@ -74,3 +74,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retrieve objects to current authenticated user"""
         return self.queryset.filter(user=self.request.user)
+
+    # there are couple of actions available by default:
+    # list = default return of list of objects in serializer,
+    # retrieve = will retrieve other serializer and will use it
+    # instead of first(default) called serializer (serializer_class)
+    def get_serializer_class(self):
+        """Return necessary serializer class when the default one
+           needs to be overridden"""
+        # self.action is the action that matches with the action of current
+        # request
+        if self.action == 'retrieve':
+            return serializers.RecipeDetailSerializer
+        return self.serializer_class
+    # Of course we could create a new serializer and make serializer_class,
+    # but it could be repetitive. That's why i just overrided the default
+    # serializer with get_serializer_class()(new seraializer)
