@@ -90,3 +90,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     # Of course we could create a new serializer and make serializer_class,
     # but it could be repetitive. That's why i just overrided the default
     # serializer with get_serializer_class()(new seraializer)
+
+    def perform_create(self, serializer):
+        """Create a new recipe process"""
+        serializer.save(user=self.request.user)
