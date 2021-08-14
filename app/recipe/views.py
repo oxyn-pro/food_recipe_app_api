@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 # in order to use API endpoint user should authenticated
 
 from . import serializers
-from mainapp.models import Tag, Ingredient
+from mainapp.models import Tag, Ingredient, Recipe
 
 
 class BaseRecipeAttrsViewSet(viewsets.GenericViewSet,
@@ -24,7 +24,7 @@ class BaseRecipeAttrsViewSet(viewsets.GenericViewSet,
     # ListModelMixin (aka list() from ViewSet) will call get_queryset to
     # retrieve objects/items from Tag.objects.all()
     def get_queryset(self):
-        """Return objects to current authenticated user"""
+        """Retrieve objects to current authenticated user"""
         return self.queryset.filter(user=self.request.user).order_by('-name')
         # request will have 'user' attached to it because
         # authentication_classes take care of authentication of user and
@@ -60,3 +60,17 @@ class IngredientViewSet(BaseRecipeAttrsViewSet):
        create operations"""
     queryset = Ingredient.objects.all()  # all objects assigned to the user
     serializer_class = serializers.IngredientSerializer
+
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    """Manage recipes in the database, .create(), .retrieve(), .list(),
+       .update(), .partial_update(), .destroy()"""
+
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (IsAuthenticated, )
+    queryset = Recipe.objects.all()
+    serializer_class = serializers.RecipeSerializer
+
+    def get_queryset(self):
+        """Retrieve objects to current authenticated user"""
+        return self.queryset.filter(user=self.request.user)
