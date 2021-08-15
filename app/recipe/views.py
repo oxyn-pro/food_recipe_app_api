@@ -73,10 +73,33 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = serializers.RecipeSerializer
 
+    # helper function
+    def _params_str_to_ints(self, qs):
+        """Convert a list of string IDs to a list of integers"""
+        return list(map(int, qs.split(',')))
+        # It is the same as [int(str_id) for str_id in qs.split(',')]
+
+    # overridden function
     def get_queryset(self):
         """Retrieve objects to current authenticated user"""
-        return self.queryset.filter(user=self.request.user)
+        tags = self.request.query_params.get('tags')
+        ingredients = self.request.query_params.get('ingredients')
+        queryset = self.queryset
+        if tags:
+            tag_ids = self._params_str_to_ints(tags)
+            queryset = queryset.filter(tags__id__in=tag_ids)
+            # tags in recipe queryset, it has a foreign key to tags table
+            # that has id collumn, double underscores __id__ mean
+            # filter in a remote table, and in means return all tags that
+            # match to the list of tags  that we provide (ie. tags).
+        if ingredients:
+            ingredient_ids = self._params_str_to_ints(ingredients)
+            queryset = queryset.filter(ingredients__id__in=ingredient_ids)
+    # dictionary containing all of query params that are provided in request
+    # ie. [tags, ingredients, ...] => these are all queries that contain objcs
+        return queryset.filter(user=self.request.user)
 
+    # overridden function.
     # there are couple of actions available by default:
     # list = default return of list of objects in serializer,
     # retrieve = will retrieve other serializer and will use it
@@ -95,10 +118,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     # but it could be repetitive. That's why i just overrided the default
     # serializer with get_serializer_class()(new seraializer)
 
+    # overridden function
     def perform_create(self, serializer):
         """Create a new recipe process"""
         serializer.save(user=self.request.user)
 
+    # created own function / helper function
     # create custom action to post image to recipe. detail means that
     # we can upload images only to created recipes(through recipe detail),
     # it will use detail URL that has ID in it.
