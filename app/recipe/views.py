@@ -1,4 +1,6 @@
-from rest_framework import viewsets, mixins
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import viewsets, mixins, status
 # mixins provide only create, list, retrieve operations of ViewSet
 from rest_framework.authentication import TokenAuthentication
 # token will be used in order to authenticate a user
@@ -86,6 +88,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         # request
         if self.action == 'retrieve':
             return serializers.RecipeDetailSerializer
+        elif self.action == 'upload_image':
+            return serializers.RecipeImageSerializer
         return self.serializer_class
     # Of course we could create a new serializer and make serializer_class,
     # but it could be repetitive. That's why i just overrided the default
@@ -94,3 +98,32 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Create a new recipe process"""
         serializer.save(user=self.request.user)
+
+    # create custom action to post image to recipe. detail means that
+    # we can upload images only to created recipes(through recipe detail),
+    # it will use detail URL that has ID in it.
+    # Upload image is the path/name of url: .../recipes/1/upload-image
+    @action(methods=["POST"], detail=True, url_path='upload-image')
+    def upload_image(self, request, pk=None):  # pk(aka id) passed through url
+        """Upload an image to a recipe"""
+        recipe = self.get_object()
+        # it will get recipe's object trough id that was included in URL
+
+        serializer = self.get_serializer(  # retrieves it own
+            recipe,                        # serializer(RecipeImageSerializer)
+            data=request.data
+        )
+
+        if serializer.is_valid():  # it makes sure that all data correct
+            serializer.save()      # like image field correct
+            return Response(
+                serializer.data,  # id of recipe, Url of the image
+                status=status.HTTP_200_OK
+            )
+        # As there is ModelSerializer in our RecipeImageSerializer, we can
+        # .save() data in our model, with updated data(fields).
+        else:
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )

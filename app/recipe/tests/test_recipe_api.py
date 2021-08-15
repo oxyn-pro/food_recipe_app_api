@@ -1,3 +1,9 @@
+import tempfile  # Generates temporary necessary files
+import os  # workinkg with paths
+
+from PIL import Image
+# Helps us to create test images that we can upload to our recipe API
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -11,6 +17,11 @@ from recipe.serializers import RecipeSerializer, RecipeDetailSerializer
 
 
 RECIPES_URL = reverse('recipe:recipe-list')
+
+
+def image_upload_url(recipe_id):
+    """Return recipe image upload URL"""
+    return reverse('recipe:recipe-upload-image', args=[recipe_id])
 
 
 def detail_url(recipe_id):
@@ -203,6 +214,7 @@ class PrivateRecipesApiTests(TestCase):
         self.assertIn(ingredient2, ingredients)
 
     # -------Testing Updating Recipe(partials update and full update)------- #
+
     # 'update' is already inserted in ModelViewSet(views), that's why we don't
     # need to implement it manually in views(ViewSet). (So all tests pass)
     def test_partial_update_recipe(self):
@@ -241,3 +253,51 @@ class PrivateRecipesApiTests(TestCase):
         self.assertEqual(recipe.price, payload['price'])
         tags = recipe.tags.all()
         self.assertEqual(len(tags), 0)
+
+
+class RecipeImageUploadTests(TestCase):
+    """Test managing recipe image upload"""
+    # setUp - makes everything before each test again and again
+    def setUp(self):
+        self.user = create_user(email='testt@gmail.com', password="Test1234")
+        self.client = APIClient()
+        self.client.force_authenticate(self.user)
+
+        self.recipe = create_sample_recipe(user=self.user)
+
+    # tearDown - makes everything after each test again and again
+    def tearDown(self):
+        """Runs everything after each test"""
+        self.recipe.image.delete()
+        # this will delete image if it exists even after test(s) finishes
+
+    def test_upload_image_to_recipe(self):
+        """Test uploading an image to recipe successfully"""
+        url = image_upload_url(self.recipe.id)
+        with tempfile.NamedTemporaryFile(suffix='.jpg') as namedtempfile:
+            image = Image.new('RGB', (10, 10))
+            image.save(namedtempfile, format='JPEG')
+            namedtempfile.seek(0)  # it will start file/text from beginning.
+            # in our case after saving filename to image, we read until
+            # the end of filename, so if we want to read further it will
+            # return blank str.
+            response = self.client.post(
+                url,
+                {'image': namedtempfile},
+                format='multipart'  # it will post the whole data, instead of
+            )                       # default JSON data.
+        # 'with' will temporary create a file so that we can write into it,
+        # after finishing if we just leave from with context manager,
+        # our 'tempfile' along with 'with' will delete created image.
+        self.recipe.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('image', response.data)
+        self.assertTrue(os.path.exists(self.recipe.image.path))
+
+    def test_upload_invalid_image_to_recipe(self):
+        """Test uploading an invalid image to recipe"""
+        url = image_upload_url(self.recipe.id)
+        payload = {'image': 'not-image'}
+        response = self.client.post(url, payload, format='multipart')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

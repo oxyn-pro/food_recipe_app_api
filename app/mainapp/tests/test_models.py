@@ -85,7 +85,7 @@ class ModelTests(TestCase):
     # -----------------------Testing Image Model----------------------- #
     @patch('uuid.uuid4')
     def test_recipe_file_name_uuid(self, mock_uuid):
-        """Test that image is saved in correct locatin"""
+        """Test that image is saved in correct locatin (with uuid)"""
         uuid = 'uuid-test'
         mock_uuid.return_value = uuid
     # when we call uuid func in patch, it will be triggered within our test

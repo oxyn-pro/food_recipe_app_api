@@ -29,3 +29,6 @@ https://geekflare.com/delete-github-branch/
 ## Serializer Relations
 
 https://www.django-rest-framework.org/api-guide/relations/#primarykeyrelatedfield
+
+## How to efficiently use Serializers in Django
+https://opensource.com/article/20/11/django-rest-framework-serializers
