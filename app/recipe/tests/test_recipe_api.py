@@ -201,3 +201,43 @@ class PrivateRecipesApiTests(TestCase):
         self.assertEqual(ingredients.count(), 2)
         self.assertIn(ingredient1, ingredients)
         self.assertIn(ingredient2, ingredients)
+
+    # -------Testing Updating Recipe(partials update and full update)------- #
+    # 'update' is already inserted in ModelViewSet(views), that's why we don't
+    # need to implement it manually in views(ViewSet). (So all tests pass)
+    def test_partial_update_recipe(self):
+        """Test updating a recipe with patch(partial update)"""
+        recipe = create_sample_recipe(user=self.user)
+        recipe.tags.add(create_sample_tag(user=self.user))
+        new_tag = create_sample_tag(user=self.user, name='Fish')
+
+        payload = {'title': 'Fish in Mangal', 'tags': [new_tag.id]}
+        url = detail_url(recipe.id)
+        self.client.patch(url, payload)
+
+        recipe.refresh_from_db()
+        tags = recipe.tags.all()
+        self.assertEqual(recipe.title, payload['title'])
+        self.assertEqual(len(tags), 1)
+        self.assertIn(new_tag, tags)
+
+    def test_full_update_recipe(self):
+        """Test updating a recipe with put(full update)"""
+        recipe = create_sample_recipe(user=self.user)
+        recipe.tags.add(create_sample_tag(user=self.user))
+
+        payload = {
+            'title': 'Potato with Mayo',
+            'time_minutes': 15,
+            'price': 2.00
+        }
+
+        url = detail_url(recipe.id)
+        self.client.put(url, payload)
+
+        recipe.refresh_from_db()
+        self.assertEqual(recipe.title, payload['title'])
+        self.assertEqual(recipe.time_minutes, payload['time_minutes'])
+        self.assertEqual(recipe.price, payload['price'])
+        tags = recipe.tags.all()
+        self.assertEqual(len(tags), 0)
