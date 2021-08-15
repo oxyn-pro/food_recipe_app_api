@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
+from unittest.mock import patch
+
 from mainapp import models
 
 
@@ -79,3 +81,17 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(recipe), recipe.title)
+
+    # -----------------------Testing Image Model----------------------- #
+    @patch('uuid.uuid4')
+    def test_recipe_file_name_uuid(self, mock_uuid):
+        """Test that image is saved in correct locatin"""
+        uuid = 'uuid-test'
+        mock_uuid.return_value = uuid
+    # when we call uuid func in patch, it will be triggered within our test
+    # and test will override a default behavior, and will return just uuid var
+        file_path = models.recipe_image_file_path(None, 'myimage.jpg')
+
+        expected_file_path = f'uploads/recipe/{uuid}.jpg'
+
+        self.assertEqual(file_path, expected_file_path)

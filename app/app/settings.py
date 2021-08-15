@@ -125,7 +125,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+# 127.0.0.1:8000/static will map to static files
 STATIC_URL = '/static/'
+# 127.0.0.1:8000/media will map to media files 
+MEDIA_URL = '/media/'
+# it tells Django where to store media files(we told to store it in container)
+MEDIA_ROOT = '/vol/web/media'
+# it tells Django where to store static files(we told to store it in container)
+STATIC_ROOT = '/vol/web/static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

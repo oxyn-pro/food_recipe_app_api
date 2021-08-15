@@ -1,3 +1,5 @@
+import uuid
+import os  # to manipulate paths
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 # BaseUserManager class - in order to create our own custom user manager
@@ -6,6 +8,15 @@ from django.contrib.auth.models import PermissionsMixin
 # PermissionsMixin - to manage and create custom permissions for a user
 
 from django.conf import settings  # importing settings from core 'app' app
+
+
+def recipe_image_file_path(instance, filename):
+    """Generates file path inserting uuid as a name for a new recipe image"""
+    extension = filename.split('.')[-1]
+    filename = f'{uuid.uuid4()}.{extension}'
+
+    return os.path.join('uploads/recipe/', filename)
+    # it will join two string repr paths into one valid path
 
 
 class CustomUserManager(BaseUserManager):
@@ -101,6 +112,7 @@ class Recipe(models.Model):
     # if you put Ingredient without quotes, then you need to have correct
     # order of classes, meaning that Ingredient must come before Recipe.
     tags = models.ManyToManyField('Tag')
+    image = models.ImageField(null=True, upload_to=recipe_image_file_path)
 
     def __str__(self):
         return self.title
