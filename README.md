@@ -32,3 +32,6 @@ https://www.django-rest-framework.org/api-guide/relations/#primarykeyrelatedfiel
 
 ## How to efficiently use Serializers in Django
 https://opensource.com/article/20/11/django-rest-framework-serializers
+
+## Understanding the Python Mock Object Library
+https://realpython.com/python-mock-library/#managing-a-mocks-side-effects
