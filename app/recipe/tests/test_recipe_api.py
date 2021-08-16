@@ -303,6 +303,9 @@ class RecipeImageUploadTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     # ------------------------Filter Recipes by Tags------------------------ #
+    # ie. .../recipes/?tags=2  or  .../recipe/?ingredients=4
+    # or .../recipes/?tags=2&ingredients=4
+
     def test_filter_recipes_by_tags(self):
         """Test returning recipes with specific tags"""
         recipe1 = create_sample_recipe(user=self.user, title='Uzbek Plov')

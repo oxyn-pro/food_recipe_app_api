@@ -5,12 +5,31 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from mainapp.models import Tag
+from mainapp.models import Tag, Recipe
 
 from recipe.serializers import TagSerializer
 
 
 TAGS_URL = reverse('recipe:tag-list')
+
+
+# In order to filter by tags #--------------------
+
+def create_sample_tag(user, name='Fresh'):
+    return Tag.objects.create(user=user, name=name)
+
+
+def create_sample_recipe(user, **params):
+    defaults = {
+        'title': 'Sample Recipe',
+        'time_minutes': 15,
+        'price': 10.00
+    }
+    defaults.update(params)
+
+    return Recipe.objects.create(user=user, **defaults)
+
+# In order to filter by tags #--------------------
 
 
 def create_user(**params):
@@ -98,3 +117,58 @@ class PrivateTagsApiTests(TestCase):
         response = self.client.post(TAGS_URL, payload)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ------------------------Test filtering by tags------------------------ #
+    # ie. .../tags/?recipe=2
+
+    def test_retrieve_tags_assigned_to_recipes(self):
+        "Filtering tags by those that are assigned to recipes"
+        tag1 = create_sample_tag(user=self.user, name='Vegan')
+        tag2 = create_sample_tag(user=self.user, name='Fast Food')
+
+        recipe = create_sample_recipe(
+            user=self.user,
+            title="Basile Salat",
+            time_minutes=15,
+            price=10.00
+        )
+        recipe.tags.add(tag1)
+
+        response = self.client.get(TAGS_URL, {"assigned_only": 1})
+        # will filter by tags that are assigned only (to recipes)
+        # 1 means True, 0 means False(default)
+
+        serializer1 = TagSerializer(tag1)
+        serializer2 = TagSerializer(tag2)
+
+        self.assertIn(serializer1.data, response.data)
+        self.assertNotIn(serializer2.data, response.data)
+
+    def test_retrieve_tags_assigned_unique(self):
+        """Filtering tags by those are assigned to recipes returns
+           unique items / ids of tags"""
+        tag = create_sample_tag(user=self.user, name='Japanese culture')
+        create_sample_tag(user=self.user, name='Indian Spices')
+
+        recipe1 = create_sample_recipe(
+            user=self.user,
+            title='Sushi with tuna',
+            time_minutes=10,
+            price=15.00
+        )
+
+        recipe2 = create_sample_recipe(
+            user=self.user,
+            title='Fried octopus with soy souce',
+            time_minutes=25,
+            price=10.00
+        )
+
+        recipe1.tags.add(tag)
+        recipe2.tags.add(tag)
+
+        response = self.client.get(TAGS_URL, {'assigned_only': 1})
+
+        self.assertEqual(len(response.data), 1)
+        # we will return 1, because we assigned only 1 id to two recipes
+        # also here id is in int

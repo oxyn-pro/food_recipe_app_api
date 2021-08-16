@@ -27,7 +27,24 @@ class BaseRecipeAttrsViewSet(viewsets.GenericViewSet,
     # retrieve objects/items from Tag.objects.all()
     def get_queryset(self):
         """Retrieve objects to current authenticated user"""
-        return self.queryset.filter(user=self.request.user).order_by('-name')
+        assigned_only = bool(
+            int(self.request.query_params.get('assigned_only', 0))
+            # dictionary that has all of the query params that are provided
+            # in the request. 'assigned_only' will be 0 or 1 in query params
+            # but in query params there is no concept of type,
+            # that's why unknown whether it is int or str. So we convert it
+            # intp int. Also, the default value is 0, if 'assigned_only' wasn't
+            # provided, so it will pass 0 into Boolean which is False.
+            # If 0 => False, 1 => True
+        )
+        queryset = self.queryset
+        if assigned_only:
+            queryset = queryset.filter(recipe__isnull=False)
+            # this will return/filter tags/ingredients that are only assigned
+            # to recipes
+        return queryset.filter(
+            user=self.request.user
+            ).order_by('-name').distinct()
         # request will have 'user' attached to it because
         # authentication_classes take care of authentication of user and
         # assignning it(user) to request. '.filter()' will filter by
@@ -35,9 +52,16 @@ class BaseRecipeAttrsViewSet(viewsets.GenericViewSet,
         # If 'request' came until this point, it means that user is already
         # authenticated because in order to come here first user should pass
         # through 'authentication_classes' and 'permission_classes'.
-        # Here queryset is filtered, meaning that necessary ingredients will be
-        # filtered / retrieved from ingredients by user's name.
+        # Here queryset is filtered meaning that necessary ingredients will be
+        # filtered/retrieved from ingredients by user's name.
         # ie. 'Kale = user1' is assigned to user1, 'Salt=user2' and etc.
+        # .distinct() will return from queryset only 1 item/unique related
+        #  to that id, id1 = recipe1, id1 = recipe2, it will not return
+        # 2 ids,thanks to 'distinct' query func,it will return 1 unique id
+
+    # If there was provided assigned_only query_parameter in filtering,
+    # then it will filter by tags/ingredients that are assigned only to
+    # scecific recipe(s).
 
     def perform_create(self, serializer):
         """Create a new tag/ingredient or any object that invokes
