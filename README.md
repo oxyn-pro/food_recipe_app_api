@@ -102,6 +102,8 @@ http://127.0.0.1:8000
 - The Pillow library has been implemented for integration with the REST API for receiving images.
 - Used uuid libraryy in order to give unique id (so that i will be sure that duplicate there will not be duplicate data)
 
+![Upload image](https://user-images.githubusercontent.com/69118015/129610585-3121cc42-5270-44b6-82bd-b4c05639f520.png)
+
 # Other project related resources
 ## Viewset vs APIView
 
