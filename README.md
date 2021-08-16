@@ -42,12 +42,18 @@ http://127.0.0.1:8000
 - Added features "create, update, validate" users
 - Unit testing all the features mentioned above
 
+#### Django User Create Path From Front to DB
+![Django User Create Path From Front to DB](https://user-images.githubusercontent.com/69118015/129601641-baf82cae-326e-4919-810a-19fe6586daf9.png)
+
+
 ## Models, Serializers, Views
 - Added models for creating custom user and custom user manager
 - Added models for Tag, Ingredient, Recipe in order to form objects in the database
 - Added different serializers in order to transform data from db to specific format and vice verse(from specific format to language objects(python))
 - Added Views in order to control the data input and output through serializers to API
 - Unit testing all the features mentioned above
+
+![User Serializer](https://user-images.githubusercontent.com/69118015/129601917-4d5739e2-40d0-48d9-8359-3b906cde24e2.png)
 
 ## Database
 - As a Database PostgreSQL was chosen
@@ -107,6 +113,14 @@ On the other hand, APIView works on the standart way of how the HTTP methods wor
     - "post"   ->  .../create/    (it should be done manually),
     - "update" ->  .../update/... 
 
+#### How ViewSet works:
+![Viewset](https://user-images.githubusercontent.com/69118015/129601459-e26583fb-2692-450c-8db8-1f6eef318ad3.png)
+
+#### ViewSet Methods:
+![ViewSet API functions](https://user-images.githubusercontent.com/69118015/129601114-e160d80d-2ea3-4ae1-95eb-e65f04598e20.jpg)
+
+#### APIView Methods:
+![APIView API](https://user-images.githubusercontent.com/69118015/129601240-da7ff694-8c80-4ee3-be2f-136fada4d000.png)
 
 ## About Serializers in Django Rest Framework:
 
