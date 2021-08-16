@@ -1,7 +1,7 @@
 # Food Recipe Application API
 ## The Structure and Source Code of the Django web application called "food recipe".
 
-# ----------------------------------------------------------------------
+# -----------------------------------------------------------------
 
 ## How to be sure that the code works in your machine:
     1) Install Python and Configure Python
@@ -92,11 +92,15 @@ http://127.0.0.1:8000
     - 127.0.0.1:8000/api/recipe/recipes/?ingredients=<recipe_id>  -> Filter recipes by given ingredient id. It will return all recipes in which given 
                                                                      ingredient was assigned (Authentication required).
     - 127.0.0.1:8000/api/recipe/recipes/?tags=<recipe_id>&ingredients=<recipe_id>  -> Filter recipes by given tag id and ingredient id. It will return all recipes in which given 
-                                                                                      tag and ingredient were assigned (Authentication required).                                                           
+                                                                                      tag and ingredient were assigned (Authentication required).    
+    - 127.0.0.1:8000/api/recipe/recipes/<recipe_id>/upload-image  -> Upload Image to the selected recipe (through its id) (Authentication required).                                                                             
 ## Filtering Feature
 - Implemented Filtering Feature
 - Filter by Tags, by Ingredients, and in recipe filter by both of them
 
+## Image upload to recipe
+- The Pillow library has been implemented for integration with the REST API for receiving images.
+- Used uuid libraryy in order to give unique id (so that i will be sure that duplicate there will not be duplicate data)
 
 # Other project related resources
 ## Viewset vs APIView
