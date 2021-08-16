@@ -28,7 +28,7 @@ docker-compose up
 #### After running a server, API will be available through this link:
 http://127.0.0.1:8000
 
-# ----------------------------------------------------------------------
+# -----------------------------------------------------------------
 
 # Project Capabilities
 ## Note: This project was constructed following all rules of PEP8 and TDD(Test Driven Development) process.
