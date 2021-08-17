@@ -98,6 +98,9 @@ http://127.0.0.1:8000
 - Implemented Filtering Feature
 - Filter by Tags, by Ingredients, and in recipe filter by both of them
 
+#### How filtering works
+![How filtering works](https://user-images.githubusercontent.com/69118015/129758314-174469db-3837-4e2d-9568-f9c88aea2528.png)
+
 ## Image upload to recipe
 - The Pillow library has been implemented for integration with the REST API for receiving images.
 - Used uuid libraryy in order to give unique id (so that i will be sure that duplicate there will not be duplicate data)
