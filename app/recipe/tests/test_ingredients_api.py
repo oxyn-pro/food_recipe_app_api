@@ -13,6 +13,11 @@ from recipe.serializers import IngredientSerializer
 INGREDIENTS_URL = reverse("recipe:ingredient-list")
 
 
+def detail_url(ingredient_id):
+    """Retrieve a specific detailed tag URL"""
+    return reverse("recipe:ingredient-detail", args=[ingredient_id])
+
+
 # In order to filter by tags #--------------------
 
 def create_sample_ingredient(user, name='Tomato'):
@@ -70,6 +75,17 @@ class PrivateIngredientApiTests(TestCase):
         serializer = IngredientSerializer(ingredients, many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data, serializer.data)
+
+    def test_retrieve_specific_ingredient(self):
+        """Test retrieving a specific id by ingredient"""
+        ingredient = create_sample_ingredient(user=self.user, name='Honey')
+
+        url = detail_url(ingredient.id)
+        response = self.client.get(url)
+
+        serializer = IngredientSerializer(ingredient)
 
         self.assertEqual(response.data, serializer.data)
 

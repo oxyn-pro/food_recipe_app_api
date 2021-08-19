@@ -53,6 +53,11 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 # here we will base our class from RecipeSerializer
+# if more than one model was given, then in order to get all the mentioned
+# models in one (like a recipe), we need to add all these serializers together
+# into one common one. Those. we need to get detailed information about
+# a specific recipe, then we need all the information about tags, ingredients,
+# and to get it we need to combine all serializers together.
 class RecipeDetailSerializer(RecipeSerializer):
     """Serialize a recipe detail"""
 

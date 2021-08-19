@@ -11,9 +11,13 @@ from . import serializers
 from mainapp.models import Tag, Ingredient, Recipe
 
 
+# We can also put viewsets.ModelViewSet, or we can mention individually those
+# that are necessary for us. RetrieveModelMixin we mentioned it in order to
+# get a specific item of the object. Ie, tags: 1,4,5 (ids of tags)
 class BaseRecipeAttrsViewSet(viewsets.GenericViewSet,
                              mixins.ListModelMixin,
-                             mixins.CreateModelMixin):
+                             mixins.CreateModelMixin,
+                             mixins.RetrieveModelMixin):
     """Common ViewSet attributes for both TagViewSet and IngredientViewSet
        classes. Manage tags, ingredients in the database, by listing,
        and controlling 'create' operations"""

@@ -13,6 +13,12 @@ from recipe.serializers import TagSerializer
 TAGS_URL = reverse('recipe:tag-list')
 
 
+def detail_url(tag_id):
+    """Retrieve a specific detailed tag URL"""
+    return reverse('recipe:tag-detail', args=[tag_id])
+    # it will look like this : .../tags/4
+
+
 # In order to filter by tags #--------------------
 
 def create_sample_tag(user, name='Fresh'):
@@ -79,6 +85,16 @@ class PrivateTagsApiTests(TestCase):
 
         # As our response data and Serializer data are both in JSON format
         # we want to check it
+        self.assertEqual(response.data, serializer.data)
+
+    def test_retrieve_specific_tag(self):
+        """Test retrieving a specific tag by id"""
+        tag = create_sample_tag(user=self.user, name='Sweet')
+
+        url = detail_url(tag.id)
+        response = self.client.get(url)
+
+        serializer = TagSerializer(tag)
         self.assertEqual(response.data, serializer.data)
 
     def test_assigned_tags_limited_user(self):
